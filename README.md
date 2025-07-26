@@ -205,7 +205,7 @@ npm run test:watch
 
 ---
 
-## 🙏 Contributing
+##  Contributing
 
 We welcome contributions! Please see the [Contributing Guide](CONTRIBUTING.md).
 
@@ -223,7 +223,7 @@ MIT License. See the [LICENSE](LICENSE) file for more info.
 
 ---
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 * Built with modern TypeScript and Node.js.
 * Inspired by the challenges of managing aliases in growing projects.
