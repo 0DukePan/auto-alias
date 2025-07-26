@@ -7,129 +7,137 @@
 
 **Professional TypeScript Alias Synchronization Tool**
 
-Automatically scan your project structure and synchronize path aliases across all configuration files. No more manual maintenance of aliases in multiple places!
+Automatically scan your project structure and synchronize path aliases across all major configuration files. No more manual updates!
+
+---
 
 ## ✨ Features
 
-- 🔍 **Smart Scanning**: Automatically detects your project structure and common source directories.
-- ⚙️ **Multi-Platform**: Supports TypeScript (`tsconfig.json`), Webpack (`webpack.config.js/ts`), Vite (`vite.config.js/ts`), and Jest (`jest.config.js/ts`).
-- 👀 **Watch Mode**: Real-time synchronization on file changes in your source directory.
-- 🛡️ **Validation**: Built-in validation for project structure and alias configurations.
-- 🎯 **Interactive**: User-friendly CLI with an interactive mode for guided operations.
-- 📦 **Zero Config**: Works out of the box with sensible defaults, creating a basic `src` directory if none exists.
-- 🧪 **Dry Run**: Preview changes before applying them to your configuration files.
-- 📄 **Helper File Generation**: Creates a TypeScript helper file for runtime alias resolution.
+* 🔍 **Smart Scanning**: Detects project structure and common source directories automatically.
+* ⚙️ **Multi-Platform Support**: Compatible with `tsconfig.json`, Webpack, Vite, and Jest.
+* 👀 **Watch Mode**: Real-time alias sync on file system changes.
+* 🛡️ **Validation**: Ensures project structure and aliases are valid before applying.
+* 🌟 **Interactive CLI**: Offers a guided CLI experience for ease of use.
+* 📦 **Zero Config**: Works out of the box with sensible defaults.
+* 🤕 **Dry Run Mode**: Preview changes without applying them.
+* 📄 **Helper File Generator**: Creates runtime-friendly TypeScript alias helper files.
+
+---
 
 ## 🚀 Quick Start
 
-\`\`\`bash
+```bash
 # Install globally
 npm install -g auto-ts-alias
 
-# Or use with npx (recommended for one-off runs)
+# Or use npx for one-off usage
 npx auto-ts-alias --init
-\`\`\`
+```
 
-## 📖 Usage
+---
+
+## 📖 CLI Usage
 
 ### Basic Commands
 
-\`\`\`bash
-# Initialize aliases for your project (default action if no command is given)
+```bash
+# Initialize and apply aliases
 auto-ts-alias --init
 
-# Watch for changes in your source directory and auto-sync
+# Start watch mode for auto-sync
 auto-ts-alias --watch
 
-# Sync aliases manually to configuration files
+# Manually sync aliases
 auto-ts-alias --sync
 
-# Preview changes without applying them
+# Preview changes
 auto-ts-alias --dry-run
 
-# Run in interactive mode for guided operations
+# Use interactive mode
 auto-ts-alias --interactive
-\`\`\`
+```
 
-### Advanced Usage
+### Advanced Options
 
-\`\`\`bash
-# Custom source directory (e.g., 'app' instead of 'src')
+```bash
+# Use a custom source directory
 auto-ts-alias --init --src-dir app
 
-# Show detailed output for debugging
+# Show verbose logs
 auto-ts-alias --init --verbose
 
-# Suppress non-error output
+# Silence logs except for errors
 auto-ts-alias --init --quiet
 
-# Force update even if alias validation fails (use with caution)
+# Force sync despite validation errors
 auto-ts-alias --init --force
 
-# Generate TypeScript alias helper file only
+# Generate only the helper file
 auto-ts-alias helper
 
-# Scan project structure and show potential aliases
+# Preview alias scan
 auto-ts-alias scan
 
-# Validate project structure and configuration files
+# Validate project configuration
 auto-ts-alias validate
-\`\`\`
+```
+
+---
 
 ## 🏗️ How It Works
 
-### 1. Project Structure Detection
-\`auto-ts-alias\` scans your specified source directory (default: `src/`) for subdirectories. For each detected directory, it proposes a corresponding alias.
+### 1. Directory Scanning
 
-Example structure and generated aliases:
-\`\`\`
+Scans your `src/` (or custom) directory for subdirectories, generating aliases like:
+
+```
 src/
 ├── components/     → @components
 ├── utils/          → @utils
 ├── hooks/          → @hooks
-├── services/       → @services
-└── components/
-    └── ui/         → @components/ui
-\`\`\`
-A root alias for `src/` (e.g., `@/*`) is always included.
+└── services/       → @services
+```
 
-### 2. Configuration Updates
+A root alias (`@/*`) is always included.
 
-Once aliases are detected, `auto-ts-alias` updates the relevant sections in your project's configuration files.
+### 2. Config File Updates
 
-**tsconfig.json**
-\`\`\`json
+Updates the following config files if detected:
+
+#### tsconfig.json
+
+```json
 {
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@components/*": ["./src/components/*"]
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+  "exclude": ["node_modules", "dist"]
 }
-\`\`\`
+```
 
-**webpack.config.js**
-\`\`\`javascript
+#### webpack.config.js
+
+```js
 const path = require('path');
 
 module.exports = {
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      '@components': path.resolve(__dirname, 'src/components'),
-      '@utils': path.resolve(__dirname, 'src/utils')
+      '@components': path.resolve(__dirname, 'src/components')
     }
   }
 };
-\`\`\`
+```
 
-**vite.config.ts**
-\`\`\`typescript
+#### vite.config.ts
+
+```ts
 import { defineConfig } from 'vite';
 import path from 'path';
 
@@ -137,100 +145,94 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: '@', replacement: path.resolve(__dirname, 'src') },
-      { find: '@components', replacement: path.resolve(__dirname, 'src/components') },
-      { find: '@utils', replacement: path.resolve(__dirname, 'src/utils') }
+      { find: '@components', replacement: path.resolve(__dirname, 'src/components') }
     ]
   }
 });
-\`\`\`
+```
 
-**jest.config.js**
-\`\`\`javascript
+#### jest.config.js
+
+```js
 module.exports = {
-  // ... other Jest configurations
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
-    "^@components/(.*)$": "<rootDir>/src/components/$1",
-    "^@utils/(.*)$": "<rootDir>/src/utils/$1"
+    "^@components/(.*)$": "<rootDir>/src/components/$1"
   }
 };
-\`\`\`
-
-## 📚 API Reference
-
-You can also use `auto-ts-alias` programmatically in your Node.js scripts.
-
-\`\`\`typescript
-import { autoTsAlias } from 'auto-ts-alias';
-
-// Initialize with your project's root directory and scan options
-const autoAlias = new autoTsAlias('/path/to/your/project', {
-  srcDir: 'src', // Source directory to scan (default: 'src')
-  excludeDirs: ['node_modules', '.git', 'dist'], // Directories to exclude from scanning
-  prefix: '@', // Alias prefix (default: '@')
-  minDepth: 1, // Minimum directory depth for alias creation
-  maxDepth: 4 // Maximum directory depth for alias creation
-});
-
-// Initialize and generate aliases across all detected config files
-await autoAlias.initialize();
-
-// Start watch mode for real-time synchronization
-await autoAlias.watch({ debounceMs: 500 }); // Optional debounce time
-
-// Generate a TypeScript helper file (e.g., src/aliases.ts)
-await autoAlias.generateHelperFile();
-
-// Perform a dry run to see potential changes
-const dryRunResult = await autoAlias.dryRun();
-console.log(dryRunResult.message);
-
-// Get current project configuration and detected aliases
-const projectInfo = autoAlias.getProjectInfo();
-console.log(projectInfo.aliases);
-\`\`\`
-
-## 🧪 Testing
-
-To run the test suite:
-
-\`\`\`bash
-# Run all tests
-npm test
-
-# Run tests with coverage report
-npm run test:coverage
-
-# Run tests in watch mode (for development)
-npm run test:watch
-\`\`\`
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-1. Fork the repository
-2. Create your feature branch (\`git checkout -b feature/amazing-feature\`)
-3. Commit your changes (\`git commit -m 'Add amazing feature'\`)
-4. Push to the branch (\`git push origin feature/amazing-feature\`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Built with TypeScript and modern Node.js.
-- Inspired by the need for better alias management in complex projects.
-- Thanks to all contributors and users for their support and feedback.
-
-## 📞 Support
-
-- 📖 [Documentation](https://github.com/yourusername/auto-ts-alias/wiki) (Coming Soon)
-- 🐛 [Issue Tracker](https://github.com/yourusername/auto-ts-alias/issues)
-- 💬 [Discussions](https://github.com/yourusername/auto-ts-alias/discussions) (Coming Soon)
+```
 
 ---
 
-Made with ❤️ by developers, for developers.
+## 📒 Programmatic API
+
+```ts
+import { autoTsAlias } from 'auto-ts-alias';
+
+const tool = new autoTsAlias('/project/path', {
+  srcDir: 'src',
+  excludeDirs: ['node_modules', '.git', 'dist'],
+  prefix: '@',
+  minDepth: 1,
+  maxDepth: 4
+});
+
+await tool.initialize();
+await tool.watch({ debounceMs: 500 });
+await tool.generateHelperFile();
+
+const dryRun = await tool.dryRun();
+console.log(dryRun.message);
+
+const info = tool.getProjectInfo();
+console.log(info.aliases);
+```
+
+---
+
+## 🤔 Testing
+
+```bash
+# Run tests
+npm test
+
+# Test with coverage
+npm run test:coverage
+
+# Watch mode
+npm run test:watch
+```
+
+---
+
+## 🙏 Contributing
+
+We welcome contributions! Please see the [Contributing Guide](CONTRIBUTING.md).
+
+1. Fork the repo
+2. Create your branch: `git checkout -b feature/my-feature`
+3. Commit: `git commit -m 'Add feature'`
+4. Push: `git push origin feature/my-feature`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+MIT License. See the [LICENSE](LICENSE) file for more info.
+
+---
+
+## 🙏 Acknowledgments
+
+* Built with modern TypeScript and Node.js.
+* Inspired by the challenges of managing aliases in growing projects.
+* Thanks to the community for ideas, feedback, and contributions.
+
+---
+
+## 📞 Support
+
+* 📖 [Docs](https://github.com/yourusername/auto-ts-alias/wiki) (Coming Soon)
+* 🛠️ [Issues](https://github.com/yourusername/auto-ts-alias/issues)
+* 🖊️ [Discussions](https://github.com/yourusername/auto-ts-alias/discussions) (Coming Soon)
